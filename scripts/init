@@ -288,23 +288,10 @@ ask_for_card() {
 # =========================================================
 # === Set the variables depending on used Odroid board  ===
 
-[ -f /ODROID_C1 ] && O_BOARD="C1"
 [ -f /ODROID_C2 ] && O_BOARD="C2"
-[ -f /ODROID_XU ] && O_BOARD="XU"
 [ -b /dev/mmcblk1 ] && NUMCARDS="2"
 
 [ "${O_BOARD}" = "C1" ] && run_scripts /scripts/panic
-
-if [ "${BOOT_CARDTYPE}" = "unknown" ]; then
-	if [ ! "$O_BOARD" = "XU" ]; then
-		if [ "${NUMCARDS}" = "1" ]; then
-			BOOT_CARDDEV="0"
-			ask_for_card
-		fi
-	elif [ "$O_BOARD" = "XU" ]; then
-		ask_for_card
-	fi
-fi
 
 if [ "$O_BOARD" = "C2" ]; then
 	ADATA_PART_ORIG="4"
@@ -319,40 +306,6 @@ if [ "$O_BOARD" = "C2" ]; then
 		NUMCARDS="2"
 		OTHER_CARDDEV="1"
 		OTHER_CARDTYPE="SD"
-	fi
-elif [ "$O_BOARD" = "C1" ]; then
-	ADATA_PART_ORIG="4"
-	ACACHE_PART_ORIG="3"
-	ODROID_DTB="meson8b_odroidc.dtb"
-	ODROID_FSTAB="fstab.odroidc"
-	ODROID_IMAGE="uImage"
-	ODROID_ASYSTEMIMAGE="rootsystem.img"
-	BKP_PREFIX="C1"
-	if [ "${NUMCARDS}" = "2" ]; then
-		BOOT_CARDTYPE="EMMC"
-		NUMCARDS="2"
-		OTHER_CARDDEV="1"
-		OTHER_CARDTYPE="SD"
-	fi
-elif [ "$O_BOARD" = "XU" ]; then
-	ADATA_PART_ORIG="3"
-	ACACHE_PART_ORIG="4"
-	ODROID_DTB="exynos5422-odroidxu3.dtb"
-	ODROID_FSTAB="fstab.odroidxu3"
-	ODROID_IMAGE="zImage"
-	ODROID_ASYSTEMIMAGE="system.img"
-	BKP_PREFIX="XU"
-
-	[ "${BOOT_CARDTYPE}" = "eMMC" ] && BOOT_CARDTYPE="EMMC"
-	if [ "${NUMCARDS}" = "2" ]; then
-		if [ "${BOOT_CARDTYPE}" = "SD" ]; then
-			OTHER_CARDDEV="0"
-			OTHER_CARDTYPE="EMMC"
-		else
-			OTHER_CARDDEV="1"
-			OTHER_CARDTYPE="SD"
-			BOOT_CARDDEV="0"
-		fi
 	fi
 fi
 # =========================================================
@@ -706,11 +659,11 @@ os_detect() {
 	printf "\033[36m\033[1m\n"
 	if [ ! "${O_BOARD}" = "XU" ]; then
 		printf "    ============================\n"
-		printf "    = ODROID %s BOOT MENU %s =\n" "${O_BOARD}" "${SCRIPT_VERSION}"
+		printf "    = JEEDOM SMART BOOT MENU %s =\n" "${O_BOARD}" "${SCRIPT_VERSION}"
 		printf "    ============================\n"
 	else
 		printf "    =================================\n"
-		printf "    = ODROID XU3/XU4 BOOT MENU %s =\n" "${SCRIPT_VERSION}"
+		printf "    = JEEDOM SMART BOOT MENU %s =\n" "${SCRIPT_VERSION}"
 		printf "    =================================\n"
 	fi
 	if [ "${NUMCARDS}" = "2" ]; then
@@ -739,8 +692,6 @@ os_detect() {
 	fi
 
 	printf "\n"
-	printf "    \033[36m\033[1mB\033[22m  Backup Android/Linux/OpenElec\033[36m\n"
-	printf "    \033[36m\033[1mU\033[22m  Update Android\033[36m\n"
 	printf "    \033[33m\033[1mI\033[22m  Prepare the card for MultiBoot, Install OS's\033[36m\n"
 	printf "\n"
 	printf "    \033[36m\033[1mX\033[22m  Exit to busybox shell\033[36m\n"
