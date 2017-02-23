@@ -1,2 +1,0 @@
-/scripts/local-top/c1_init.sh "$@"
-[ -e /conf/param.conf ] && . /conf/param.conf
